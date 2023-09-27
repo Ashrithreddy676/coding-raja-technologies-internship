@@ -1,0 +1,100 @@
+import os
+
+class Todo:
+    def __init__(self, task, priority, due_date, completed=False):
+        self.task = task
+        self.priority = priority
+        self.due_date = due_date
+        self.completed = completed
+
+    def __str__(self):
+        return f"{self.task} ({self.priority}, {self.due_date}, {'Completed' if self.completed else 'Pending'})"
+
+class TodoList:
+    def __init__(self, filename):
+        self.filename = filename
+        self.todos = []
+
+        # Load the to-do list from the file
+        with open(self.filename, "r") as f:
+            for line in f:
+                task, priority, due_date, completed = line.split(",")
+                self.todos.append(Todo(task, priority, due_date, completed))
+
+    def save(self):
+        # Save the to-do list to the file
+        with open(self.filename, "w") as f:
+            for todo in self.todos:
+                f.write(f"{todo.task},{todo.priority},{todo.due_date},{todo.completed}\n")
+
+    def add(self, task, priority, due_date):
+        # Add a new task to the to-do list
+        self.todos.append(Todo(task, priority, due_date))
+
+    def remove(self, task_id):
+        # Remove a task from the to-do list by its ID
+        self.todos.pop(task_id)
+
+    def mark_completed(self, task_id):
+        # Mark a task as completed
+        self.todos[task_id].completed = True
+
+    def list_all(self):
+        # List all tasks in the to-do list
+        for i, todo in enumerate(self.todos):
+            print(f"{i + 1}. {todo}")
+
+def main():
+    # Create a new to-do list object
+    to_do_list = TodoList("to_do_list.txt")
+
+    # Display the main menu
+    print("Command-line to-do list application")
+    print("----------------------------------")
+    print("1. Add a new task")
+    print("2. Remove a task")
+    print("3. Mark a task as completed")
+    print("4. List all tasks")
+    print("5. Exit")
+
+    # Get user input
+    choice = input("Enter your choice: ")
+
+    # Perform the selected action
+    if choice == "1":
+        task = input("Enter the task: ")
+        priority = input("Enter the priority (high, medium, low): ")
+        due_date = input("Enter the due date (YYYY-MM-DD): ")
+
+        to_do_list.add(task, priority, due_date)
+        to_do_list.save()
+
+        print("Task added successfully!")
+
+    elif choice == "2":
+        task_id = int(input("Enter the ID of the task to remove: "))
+
+        to_do_list.remove(task_id)
+        to_do_list.save()
+
+        print("Task removed successfully!")
+
+    elif choice == "3":
+        task_id = int(input("Enter the ID of the task to mark as completed: "))
+
+        to_do_list.mark_completed(task_id)
+        to_do_list.save()
+
+        print("Task marked as completed successfully!")
+
+    elif choice == "4":
+        to_do_list.list_all()
+
+    elif choice == "5":
+        exit()
+
+    else:
+        print("Invalid choice!")
+
+if __name__ == "__main__":
+    main()
